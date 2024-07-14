@@ -1,73 +1,65 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: rtaboada <rtaboada@student.42barcelona.    +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/05/24 11:45:57 by rtaboada          #+#    #+#              #
-#    Updated: 2024/06/29 00:52:43 by rtaboada         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
-SERVERNAME	=	server
-CLIENTNAME	=	client
-LIBFTNAME 	= 	libft.a
-FTPRINTFNAME 	= 	libftprintf.a
-INCLUDE		= 	server.h
-	
-LIBFTDIR	=	./libft
-FTPRINTFDIR	=	./ft_printf
-SERVERSRC	=	server.c	
-	
-OBJSERVER	=	${SERVERSRC:.c=.o}
-	
-GCC		=	gcc
-RM		=	rm -f
-AR		=	ar rc
-RN		=	ranlib
+GREEN	= \033[0;32m
+CYAN	= \033[0;36m
+RED		= \033[0;31m
+NC		= \033[0m
+ORANGE	= \033[38;5;214m
 
 
+COMPILER = cc
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address -I$(INC_DIR) -Ilibft -Ift_printf
 
-CFLAGS	=	-Wall -Wextra -Werror -fsanitize=address
+INC_DIR = inc/
+SRC_DIR = src/
+LIBFT_DIR = libft/
+FT_PRINTF_DIR = ft_printf/
 
-all: $(SERVERNAME)
+SERVER_FILES = server.c
+CLIENT_FILES = client.c
 
-makelibft:
-	@make -C $(LIBFTDIR)
-	@cp $(LIBFTDIR)/$(LIBFTNAME) .
+SERVER_SRCS = $(addprefix $(SRC_DIR), $(SERVER_FILES))
+CLIENT_SRCS = $(addprefix $(SRC_DIR), $(CLIENT_FILES))
+SERVER_OBJS = $(SERVER_SRCS:.c=.o)
+CLIENT_OBJS = $(CLIENT_SRCS:.c=.o)
 
-makeftprintf:			
-	@make -C $(FTPRINTFDIR)
-	@cp $(FTPRINTFDIR)/$(FTPRINTFNAME) .
+CLIENT = client
+SERVER = server
 
-.c.o:
-	${GCC} ${CFLAGS} -c $< -o ${<:.c=.o}
+LIBFT = $(LIBFT_DIR)libft.a
+FT_PRINTF = $(FT_PRINTF_DIR)libftprintf.a
 
-compileserver:
-	${GCC} ${CFLAGS} ${FTPRINTFNAME} ${SERVERSRC} -o ${SERVERNAME}
 
-$(SERVERNAME):	makelibft makeftprintf $(OBJS) ${OBJ} 
-	@echo "Compiling..."
-	${AR} ${SERVERNAME} ${OBJ}
-	${RN} ${SERVERNAME} 
-	$(compileserver)
-	@echo "Compilated successfully!"
+all: $(LIBFT) $(FT_PRINTF) $(SERVER) $(CLIENT)
+
+$(LIBFT):
+	@echo "$(CYAN)Compiling libft...$(NC)"
+	$(MAKE) -C libft
+
+$(FT_PRINTF):
+	@echo "$(CYAN)Compiling ft_printf...$(NC)"
+	$(MAKE) -C ft_printf
+
+$(SERVER): $(SERVER_OBJS)
+	@echo "$(CYAN)Compiling $(SERVER)...$(NC)"
+	$(COMPILER) $(CFLAGS) -o $(SERVER) $(SERVER_OBJS) $(LIBFT) $(FT_PRINTF)
+	@echo "$(GREEN)$(SERVER) compiled successfully! ✅$(NC)"
+
+$(CLIENT): $(CLIENT_OBJS)
+	@echo "$(CYAN)Compiling $(CLIENT)...$(NC)"
+	$(COMPILER) $(CFLAGS) -o $(CLIENT) $(CLIENT_OBJS) $(LIBFT) $(FT_PRINTF)
+	@echo "$(GREEN)$(CLIENT) compiled successfully! ✅$(NC)"
 
 clean:
-	@echo "Removing *.o files..."
-	${RM} ${OBJ}
-	@cd $(LIBFTDIR) && make clean
-	@cd $(FTPRINTFDIR) && make clean
-	@echo "Done!"
+	@echo "$(ORANGE)Cleaning object files... 🧹$(NC)"
+	rm -f $(OBJS) $(OBJS_BONUS)
+	@$(MAKE) -C libft clean
+	@$(MAKE) -C ft_printf clean
 
 fclean: clean
-	@echo "Removing library..."
-	${RM} $(NAME)
-	@cd $(LIBFTDIR) && make fclean
-	@cd $(FTPRINTFDIR) && make fclean
-	@echo "Done!"
+	@echo "$(ORANGE)Removing binaries... 🗑️$(NC)"
+	rm -f $(NAME) $(BONUS)
+	@$(MAKE) -C libft fclean
+	@$(MAKE) -C ft_printf fclean
 
-re: fclean all  
+re: fclean all
 
 .PHONY: all clean fclean re
