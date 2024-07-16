@@ -50,13 +50,13 @@ $(CLIENT): $(CLIENT_OBJS)
 
 clean:
 	@echo "$(ORANGE)Cleaning object files... 🧹$(NC)"
-	rm -f $(OBJS) $(OBJS_BONUS)
+	rm -rf $(SERVER_OBJS) $(CLIENT_OBJS) $(OBJS_BONUS)
 	@$(MAKE) -C libft clean
 	@$(MAKE) -C ft_printf clean
 
 fclean: clean
 	@echo "$(ORANGE)Removing binaries... 🗑️$(NC)"
-	rm -f $(NAME) $(BONUS)
+	rm -rf $(SERVER) $(CLIENT) $(BONUS)
 	@$(MAKE) -C libft fclean
 	@$(MAKE) -C ft_printf fclean
 
