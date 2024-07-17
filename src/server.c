@@ -13,10 +13,7 @@ void	message_received(void)
 void	concat_char(char c, int msg_size)
 {
 	char *new_message;
-	char str[2];
 
-	str[0] = c;
-	str[1] = '\0';
 	new_message = (char *)malloc(sizeof(char) * (msg_size + 2));
 	if (!new_message)
 	{
@@ -33,7 +30,7 @@ void	concat_char(char c, int msg_size)
 	g_msg = new_message;
 }
 
-void	handle_signal(int sig)
+void	handle_signal(int sig, siginfo_t *info, void *context)
 {
 	static int size = 0;
 	static int byte = 0;
@@ -42,6 +39,7 @@ void	handle_signal(int sig)
 	if (sig == SIGUSR1)
 		byte |= (1 << bit_index);
 	bit_index++;
+	kill(info->si_pid, SIGUSR1);
 	if (bit_index == 8)
 	{
 		concat_char(byte, size++);
@@ -53,8 +51,7 @@ void	handle_signal(int sig)
 		bit_index = 0;
 		byte = 0;
 	}
-	if (size % 100 == 0)
-		usleep(100);
+	(void) context;
 }
 
 int	main(void)
@@ -63,8 +60,8 @@ int	main(void)
 	pid_t pid;
 
 	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	sa.sa_handler = handle_signal;
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = handle_signal;
 	if (sigaction(SIGUSR1, &sa, NULL) == -1 || sigaction(SIGUSR2, &sa, NULL) ==
 		-1)
 	{
