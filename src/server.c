@@ -1,6 +1,5 @@
 #include "minitalk.h"
 
-
 static char	*g_msg = NULL;
 
 void	message_received(void)
@@ -12,7 +11,7 @@ void	message_received(void)
 
 void	concat_char(char c, int msg_size)
 {
-	char *new_message;
+	char	*new_message;
 
 	new_message = (char *)malloc(sizeof(char) * (msg_size + 2));
 	if (!new_message)
@@ -32,16 +31,18 @@ void	concat_char(char c, int msg_size)
 
 void	handle_signal(int sig, siginfo_t *info, void *context)
 {
-	static int size = 0;
-	static int byte = 0;
-	static int bit_index = 0;
+	static int	size = 0;
+	static int	byte = 0;
+	static int	bit_index = 0;
 
 	if (sig == SIGUSR1)
 		byte |= (1 << bit_index);
+	else if (sig != SIGUSR2)
+		return ;
 	bit_index++;
-	kill(info->si_pid, SIGUSR1);
 	if (bit_index == 8)
 	{
+		ft_printf("Received byte %c\n", byte);
 		concat_char(byte, size++);
 		if (byte == '\0')
 		{
@@ -51,13 +52,17 @@ void	handle_signal(int sig, siginfo_t *info, void *context)
 		bit_index = 0;
 		byte = 0;
 	}
-	(void) context;
+	(void)context;
+	if (kill(info->si_pid, SIGUSR1) == -1)
+	{
+		ft_putstr_fd("Error on ack", 2);
+	}
 }
 
 int	main(void)
 {
-	struct sigaction sa;
-	pid_t pid;
+	struct sigaction	sa;
+	pid_t			pid;
 
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_SIGINFO;
@@ -75,6 +80,7 @@ int	main(void)
 		exit(1);
 	while (1)
 		pause();
-	free(g_msg);
+	if (g_msg)
+		free(g_msg);
 	return (0);
 }
