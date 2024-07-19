@@ -15,6 +15,7 @@ FT_PRINTF_DIR = ft_printf/
 
 SERVER_FILES = server.c
 CLIENT_FILES = client.c
+BONUS_FILES = server_bonus.c client_bonus.c
 
 SERVER_SRCS = $(addprefix $(SRC_DIR), $(SERVER_FILES))
 CLIENT_SRCS = $(addprefix $(SRC_DIR), $(CLIENT_FILES))
@@ -47,6 +48,8 @@ $(CLIENT): $(CLIENT_OBJS)
 	@echo "$(CYAN)Compiling $(CLIENT)...$(NC)"
 	$(COMPILER) $(CFLAGS) -o $(CLIENT) $(CLIENT_OBJS) $(LIBFT) $(FT_PRINTF)
 	@echo "$(GREEN)$(CLIENT) compiled successfully! ✅$(NC)"
+
+bonus: all
 
 clean:
 	@echo "$(ORANGE)Cleaning object files... 🧹$(NC)"
