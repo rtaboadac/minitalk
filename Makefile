@@ -59,13 +59,6 @@ fclean: clean
 	rm -rf $(SERVER) $(CLIENT) $(BONUS)
 	@$(MAKE) -C libft fclean
 	@$(MAKE) -C ft_printf fclean
-	rm server_output
-
-start_server:
-	./server > server_output
-
-start_client:
-	./client $$(cat server_output) $(TEXT)
 
 re: fclean all
 

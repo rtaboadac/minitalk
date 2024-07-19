@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rtaboada <rtaboada@student.42barcelon      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/20 00:49:51 by rtaboada          #+#    #+#             */
+/*   Updated: 2024/07/20 00:55:29 by rtaboada         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minitalk.h"
 
 static char	*g_msg = NULL;
@@ -42,7 +54,6 @@ void	handle_signal(int sig, siginfo_t *info, void *context)
 	bit_index++;
 	if (bit_index == 8)
 	{
-		ft_printf("Received byte %c\n", byte);
 		concat_char(byte, size++);
 		if (byte == '\0')
 		{
@@ -54,21 +65,19 @@ void	handle_signal(int sig, siginfo_t *info, void *context)
 	}
 	(void)context;
 	if (kill(info->si_pid, SIGUSR1) == -1)
-	{
 		ft_putstr_fd("Error on ack", 2);
-	}
 }
 
 int	main(void)
 {
 	struct sigaction	sa;
-	pid_t			pid;
+	pid_t				pid;
 
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = handle_signal;
-	if (sigaction(SIGUSR1, &sa, NULL) == -1 || sigaction(SIGUSR2, &sa, NULL) ==
-		-1)
+	if (sigaction(SIGUSR1, &sa, NULL) == -1
+		|| sigaction(SIGUSR2, &sa, NULL) == -1)
 	{
 		ft_putstr_fd("sigaction error\n", 2);
 		exit(EXIT_FAILURE);
