@@ -6,7 +6,7 @@
 /*   By: rtaboada <rtaboada@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 00:48:59 by rtaboada          #+#    #+#             */
-/*   Updated: 2024/07/20 00:52:33 by rtaboada         ###   ########.fr       */
+/*   Updated: 2024/07/20 02:30:53 by rtaboada         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ static void	send_next_char_bit(pid_t server_pid)
 	}
 	if (bit_i == 8)
 	{
-		g_msg.last_sent = str_i;
 		str_i++;
 		bit_i = 0;
 	}
@@ -67,7 +66,6 @@ int	main(int argc, char *argv[])
 	server_pid = ft_atoi(argv[1]);
 	g_msg.len = ft_strlen(argv[2]);
 	g_msg.str = argv[2];
-	g_msg.last_sent = -1;
 	send_next_char_bit(server_pid);
 	while (1)
 		pause();

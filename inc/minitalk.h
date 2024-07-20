@@ -24,7 +24,6 @@ typedef struct s_msg
 {
 	char	*str;
 	int		len;
-	int		last_sent;
 }			t_msg;
 
 #endif
